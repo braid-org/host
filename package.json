@@ -1,0 +1,15 @@
+{
+  "name": "@braidjs/host",
+  "version": "1.0.0",
+  "description": "A nice way to host Braid apps",
+  "main": "host.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "/braid-org/host"
+  },
+  "homepage": "https://github.com/braid-org/host#readme",
+  "dependencies": {
+    "http2-proxy": "^5.0.53"
+  }
+}
