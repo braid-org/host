@@ -6,16 +6,12 @@ var host = {}
 host.route = ({path, to}) => { routes.push({path, to}) }
 
 host.server = (name, file='server.js') => {
-    var spawn = require('child_process').spawn
+    var fork = require('child_process').fork
     var port = 2000 + Math.floor(Math.random() * 7999) + ''
 
     // Span a child process
-    var process = spawn(
-        '/usr/local/bin/node',
-        [
-            file,               // Filename
-            port                // Arguments
-        ],
+    var process = fork(
+        file,
         {                       // Options
             env: {port: port},
             cwd: name,
