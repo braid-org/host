@@ -52,7 +52,8 @@ host.listen = (port) => {
     var proxy = require('http2-proxy')
 
     server.on('request', (req, res) => {
-        console.log('Host:', req.method, req.url, req.headers.accept && req.headers.accept.substr(0,40))
+        var host = req.headers.host || req.headers[':authority']
+        console.log('Host:', req.method, host, req.url)
 
         for (var i=0; i<routes.length; i++) {
             var route = routes[i]
@@ -68,8 +69,9 @@ host.listen = (port) => {
                 //     req.url = '/' + req.url.substr(route.path.length)
                 // }
                 console.log('Host: sending route to', route.to.name)
+
                 proxy.web(req, res, {
-                    hostname: 'localhost',
+                    hostname: host,
                     port: route.to.port
                 }, errcatch)
                 return
@@ -78,14 +80,15 @@ host.listen = (port) => {
 
     })
     server.on('upgrade', (req, socket, head) => {
-        console.log('Host websocket:', req.method, req.url)
+        var host = req.headers.host || req.headers[':authority']
+        console.log('Host websocket:', req.method, host, req.url)
 
         for (var i=0; i<routes.length; i++) {
             var route = routes[i]
             if (route_match(req, route)) {
                 console.log('forwarding websocket to', route.to.name)
                 proxy.ws(req, socket, head, {
-                    hostname: 'localhost',
+                    hostname: host,
                     port: route.to.port
                 }, errcatch)
                 return
