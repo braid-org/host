@@ -72,7 +72,8 @@ host.listen = (port) => {
 
                 proxy.web(req, res, {
                     hostname: host,
-                    port: route.to.port
+                    port: route.to.port,
+                    onReq: route.to.new_req
                 }, errcatch)
                 return
             }
@@ -89,7 +90,8 @@ host.listen = (port) => {
                 console.log('forwarding websocket to', route.to.name)
                 proxy.ws(req, socket, head, {
                     hostname: host,
-                    port: route.to.port
+                    port: route.to.port,
+                    onReq: route.to.new_req
                 }, errcatch)
                 return
             }

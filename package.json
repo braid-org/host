@@ -1,6 +1,6 @@
 {
   "name": "@braidjs/host",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A nice way to host Braid apps",
   "main": "host.js",
   "scripts": {},
