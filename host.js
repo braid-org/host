@@ -31,9 +31,15 @@ host.server = (name, file='server.js') => {
         server.output += x
         console.log((`> ${name}-err: ` + x).slice(0, -1))
     })
-    process.on('close', (code) => {
+    process.on('close', async (code) => {
         console.log('process', name, 'exited with code', code)
         delete servers[port]
+
+        // check if the process is really dead
+        // (because it seems like there are some ghost processes looming about sometimes)
+        if ((await get_running_process_set())[process.pid]) {
+            require('fs').appendFileSync('host-ghost-processes.log', `process = ${process.pid}\n`)
+        }
 
         // Restart in 3 seconds
         setTimeout( () => module.exports.server(name, file), 3000)
@@ -123,5 +129,14 @@ function route_match (req, route) {
 
 var errcatch = (err) => err && console.error('proxy error', err)
 
+async function get_running_process_set() {
+    let ps = require('child_process').spawn('ps', ['axo', 'pid'], {stdio: 'pipe'})
+    let ps_stdout = []
+    ps.stdout.on('data', x => ps_stdout.push(x))
+    ps.stderr.on('data', x => ps_stdout.push(x))
+    await new Promise(done => ps.stdout.on('end', done))
+    let x = Buffer.concat(ps_stdout).toString()
+    return Object.fromEntries(x.match(/\d+/g).map(x => [x, true]))
+}
 
 module.exports = host
